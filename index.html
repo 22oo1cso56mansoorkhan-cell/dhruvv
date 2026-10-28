@@ -1,539 +1,903 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Question For You...</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <style>
-        :root {
-            --primary-red: #ff003c;
-            --glow-red: #ff3366;
-            --dark-red: #2a0008;
-            --gold: #ffd700;
-            --text-light: #ffffff;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#180008">
+  <title>A Little Message for You ❤️</title>
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, var(--dark-red) 0%, #000000 100%);
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            overflow: hidden;
-            color: var(--text-light);
-            cursor: crosshair;
-        }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
-        #canvas-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
+  <style>
+    :root {
+      --red: #ff174d;
+      --pink: #ff6688;
+      --gold: #ffd700;
+      --glass: rgba(80, 8, 30, 0.82);
+      --white: #fff;
+    }
 
-        /* Glassmorphism Panel Base */
-        .glass-panel {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -40%);
-            width: 90%;
-            max-width: 550px;
-            padding: 40px 30px;
-            background: rgba(255, 0, 60, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 100, 130, 0.3);
-            border-radius: 30px;
-            box-shadow: 0 0 40px rgba(255, 0, 60, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.05);
-            text-align: center;
-            opacity: 0;
-            z-index: 10;
-            visibility: hidden;
-        }
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        /* Task 1 UI */
-        #task-1-ui {
-            position: absolute;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            z-index: 5;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px 30px;
-            border-radius: 30px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
-        }
-        #task-1-ui h2 { margin: 0; font-size: 1.2rem; font-weight: 400; }
-        #task-1-ui span { font-weight: bold; color: var(--gold); font-size: 1.5rem; }
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+    }
 
-        /* The Long Message */
-        #long-message p {
-            font-size: 1.25rem;
-            line-height: 1.8;
-            margin-bottom: 30px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            font-weight: 300;
-        }
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow: hidden;
+      color: var(--white);
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background: radial-gradient(circle at center, #350012 0%, #100006 75%, #000 100%);
+    }
 
-        /* Task 2 UI */
-        #task-2-ui {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 10;
-            opacity: 0;
-            visibility: hidden;
-            width: 100%;
-        }
-        #task-2-ui h2 {
-            font-size: 2rem;
-            text-shadow: 0 0 20px var(--glow-red);
-            margin-bottom: 50px;
-            pointer-events: none;
-        }
+    button {
+      font: inherit;
+      touch-action: manipulation;
+    }
 
-        .giant-heart {
-            position: relative;
-            width: 100px;
-            height: 90px;
-            margin: 0 auto;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-        .giant-heart:before, .giant-heart:after {
-            position: absolute;
-            content: "";
-            left: 50px;
-            top: 0;
-            width: 50px;
-            height: 80px;
-            background: var(--glow-red);
-            border-radius: 50px 50px 0 0;
-            transform: rotate(-45deg);
-            transform-origin: 0 100%;
-            box-shadow: 0 0 30px var(--glow-red);
-        }
-        .giant-heart:after {
-            left: 0;
-            transform: rotate(45deg);
-            transform-origin: 100% 100%;
-        }
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
 
-        /* Proposal Card */
-        #proposal-card h1 {
-            font-size: 1.8rem;
-            line-height: 1.5;
-            margin-bottom: 40px;
-            font-weight: 500;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
+    /* Intro game instruction */
 
-        .btn-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            position: relative;
-            height: 60px;
-        }
+    #task-1-ui {
+      position: fixed;
+      z-index: 2;
+      top: max(18px, env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(92%, 440px);
+      padding: 14px 16px;
+      text-align: center;
+      border: 1px solid rgba(255, 215, 0, 0.35);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.09);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 0 24px rgba(255, 215, 0, 0.12);
+    }
 
-        button {
-            padding: 15px 35px;
-            font-size: 1.1rem;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            z-index: 15;
-        }
+    #task-1-ui h2 {
+      margin: 0;
+      font-size: clamp(0.9rem, 3.8vw, 1.15rem);
+      line-height: 1.5;
+      font-weight: 500;
+    }
 
-        .btn-primary {
-            background: linear-gradient(45deg, var(--primary-red), #ff6b8b);
-            color: white;
-            box-shadow: 0 10px 25px rgba(255, 0, 60, 0.5);
-        }
-        .btn-primary:hover {
-            transform: scale(1.08) translateY(-3px);
-            box-shadow: 0 15px 35px rgba(255, 0, 60, 0.7);
-        }
+    #score {
+      color: var(--gold);
+      font-weight: 800;
+    }
 
-        #btn-no {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 2px solid rgba(255,255,255,0.4);
-            position: absolute;
-        }
+    /* Reusable message card */
 
-        /* Success Message - The Sky Drop Setup */
-        #success-message {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            z-index: 5; 
-            visibility: hidden;
-            pointer-events: none; 
-        }
+    .glass-panel {
+      position: fixed;
+      z-index: 5;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(92%, 560px);
+      max-height: 82vh;
+      max-height: 82dvh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      padding: clamp(18px, 5vw, 30px);
+      border: 1px solid rgba(255, 110, 145, 0.32);
+      border-radius: 24px;
+      background: var(--glass);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow:
+        0 0 35px rgba(255, 0, 60, 0.18),
+        inset 0 0 18px rgba(255, 255, 255, 0.035);
+      text-align: left;
+      opacity: 0;
+      visibility: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 100, 140, 0.6) transparent;
+    }
 
-        #falling-content {
-            text-align: center;
-            transform: translateY(-100vh); /* Start high off screen */
-        }
+    .glass-panel p {
+      margin: 0 0 18px;
+      font-size: clamp(0.98rem, 3.8vw, 1.08rem);
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+    }
 
-        #final-text {
-            font-size: 4rem;
-            color: #fff;
-            text-shadow: 0 0 30px var(--glow-red);
-            font-weight: bold;
-            margin: 0;
-        }
+    .glass-panel p:last-of-type {
+      margin-bottom: 22px;
+    }
 
-        #sender-text {
-            font-size: 2rem;
-            color: var(--gold);
-            margin-top: 15px;
-            opacity: 0; /* Hidden until blast */
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-            font-weight: 300;
-            letter-spacing: 2px;
-        }
+    /* First message */
 
-        @media (max-width: 600px) {
-            #long-message p { font-size: 1.1rem; }
-            #proposal-card h1 { font-size: 1.4rem; }
-            button { padding: 12px 25px; font-size: 1rem; }
-            #task-1-ui { width: 80%; font-size: 0.9rem; }
-            #final-text { font-size: 2.5rem; }
-            #sender-text { font-size: 1.5rem; }
-        }
-    </style>
+    #long-message {
+      text-align: left;
+    }
+
+    #long-message .intro {
+      font-size: clamp(1.02rem, 4vw, 1.12rem);
+      line-height: 1.9;
+    }
+
+    .highlight {
+      color: #ffb7ca;
+      font-weight: 700;
+    }
+
+    /* Buttons */
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: 13px 22px;
+      border: 0;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--red), var(--pink));
+      color: #fff;
+      font-size: 0.98rem;
+      font-weight: 700;
+      text-align: center;
+      box-shadow: 0 7px 22px rgba(255, 0, 60, 0.28);
+      cursor: pointer;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+
+    #btn-continue {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    /* Heart-tapping stage */
+
+    #task-2-ui {
+      position: fixed;
+      z-index: 3;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      text-align: center;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    #task-2-ui h2 {
+      margin: 0 0 55px;
+      font-size: clamp(1.25rem, 5.5vw, 2rem);
+      line-height: 1.5;
+      text-shadow: 0 0 20px var(--pink);
+    }
+
+    .giant-heart {
+      position: relative;
+      width: 90px;
+      height: 82px;
+      margin: 0 auto;
+      cursor: pointer;
+      filter: drop-shadow(0 0 18px var(--pink));
+      transform-origin: center;
+      touch-action: manipulation;
+    }
+
+    .giant-heart::before,
+    .giant-heart::after {
+      position: absolute;
+      top: 0;
+      left: 45px;
+      width: 45px;
+      height: 72px;
+      content: "";
+      background: var(--pink);
+      border-radius: 45px 45px 0 0;
+      transform: rotate(-45deg);
+      transform-origin: 0 100%;
+    }
+
+    .giant-heart::after {
+      left: 0;
+      transform: rotate(45deg);
+      transform-origin: 100% 100%;
+    }
+
+    /* Happiness request */
+
+    #proposal-card {
+      text-align: left;
+    }
+
+    #proposal-card .proposal-message p {
+      margin-bottom: 16px;
+      font-size: clamp(0.94rem, 3.7vw, 1.03rem);
+      line-height: 1.75;
+    }
+
+    #proposal-card .proposal-message strong {
+      color: #ffb6ca;
+    }
+
+    .btn-container {
+      display: flex;
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      min-height: 58px;
+      margin-top: 24px;
+    }
+
+    #btn-yes {
+      min-width: 145px;
+    }
+
+    #btn-no {
+      position: relative;
+      min-width: 95px;
+      min-height: 48px;
+      padding: 12px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 0.98rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Final message */
+
+    #success-message {
+      position: fixed;
+      z-index: 4;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding:
+        max(14px, env(safe-area-inset-top))
+        12px
+        max(14px, env(safe-area-inset-bottom));
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #falling-content {
+      width: min(100%, 760px);
+      max-height: 90vh;
+      max-height: 90dvh;
+      overflow-y: auto;
+      padding: clamp(12px, 4vw, 26px);
+      text-align: center;
+      overflow-wrap: anywhere;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #final-text {
+      margin: 0 0 20px;
+      color: #fff;
+      font-size: clamp(1.55rem, 6.3vw, 2.8rem);
+      line-height: 1.4;
+      font-weight: 800;
+      text-shadow: 0 0 22px rgba(255, 51, 102, 0.8);
+    }
+
+    #final-message {
+      margin: 0;
+      color: #ffeaf0;
+      font-size: clamp(0.98rem, 3.8vw, 1.2rem);
+      line-height: 1.85;
+    }
+
+    #sender-text {
+      margin: 25px 0 0;
+      color: var(--gold);
+      font-size: clamp(1.05rem, 4.5vw, 1.6rem);
+      line-height: 1.5;
+      letter-spacing: 1px;
+      opacity: 0;
+      text-shadow: 0 0 16px rgba(255, 215, 0, 0.5);
+    }
+
+    @media (max-width: 380px) {
+      .glass-panel {
+        width: 94%;
+        padding: 17px;
+        border-radius: 20px;
+      }
+
+      .glass-panel p {
+        line-height: 1.7;
+      }
+
+      .btn-container {
+        gap: 10px;
+      }
+
+      #btn-yes,
+      #btn-no {
+        min-width: 110px;
+        padding: 12px 15px;
+      }
+
+      #final-text {
+        font-size: 1.45rem;
+      }
+    }
+
+    @media (max-height: 650px) {
+      .glass-panel {
+        max-height: 78vh;
+        max-height: 78dvh;
+      }
+
+      #task-2-ui h2 {
+        margin-bottom: 35px;
+      }
+
+      #falling-content {
+        max-height: 94vh;
+        max-height: 94dvh;
+      }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .btn-primary {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(255, 0, 60, 0.42);
+      }
+    }
+  </style>
 </head>
+
 <body>
+  <canvas id="canvas-container"></canvas>
 
-    <canvas id="canvas-container"></canvas>
+  <div id="task-1-ui">
+    <h2>
+      Catch the golden pieces of my heart:
+      <span id="score">0</span> / 3
+    </h2>
+  </div>
 
-    <div id="task-1-ui">
-        <h2>Catch the golden pieces of my heart: <span id="score">0</span> / 3</h2>
+  <section id="long-message" class="glass-panel">
+    <p class="intro">
+      ❤️✨ <span class="highlight">You are my favourite female best friend</span>,
+      and I honestly don’t know how time flies so quickly whenever I’m with you. 🫶🏻
+    </p>
+
+    <p class="intro">
+      👼🏻 <span class="highlight">I call you my angel</span> not just for the sake
+      of saying it, but because I genuinely mean it. ❤️
+    </p>
+
+    <p class="intro">
+      You have this incredible ability to change my mood in a second, even when
+      I feel like nothing in the world could make me feel better. You mean more
+      to me than words could ever explain. 🥹
+    </p>
+
+    <p class="intro">
+      🫂❤️ When you gave me that first hug, all I wanted to say was,
+      “Stay strong, khush rehna.” But somehow, I couldn’t bring myself to say it,
+      because I knew that if I did, it would make the moment even more emotional
+      and probably make our hug last even longer. 🥹🫂
+    </p>
+
+    <p class="intro">
+      🌷💖 Honestly, I’m just grateful to have someone like you in my life.
+      Never forget how special you are, and no matter what happens, always stay
+      strong, keep smiling, and
+      <span class="highlight">khush rehna, my angel.</span> 👼🏻❤️✨
+    </p>
+
+    <button id="btn-continue" class="btn-primary">
+      Continue ❤️
+    </button>
+  </section>
+
+  <section id="task-2-ui">
+    <h2>Tap to fill my heart with love ❤️</h2>
+    <div id="giant-heart" class="giant-heart" role="button"
+         aria-label="Tap the heart to continue" tabindex="0"></div>
+  </section>
+
+  <section id="proposal-card" class="glass-panel">
+    <div class="proposal-message">
+      <p>
+        I love uuu, Rinkuuuu 🥹❤️🫂, but I guess we aren't destined to be
+        together… 🥀💔 Still, even after everything, you took such good care
+        of me, and that means more to me than words can ever express. 🫶🏻❤️‍🩹
+      </p>
+
+      <p>
+        So, I have just one little request for you, my Rinkuuu 🥺💗…
+        <strong>PLEASE BE HAPPY, ALWAYS!</strong> 🫂🌷 Even when life gets hard,
+        even when everything feels impossible, please don't let those beautiful
+        eyes shed tears unless they're happy tears. 🥹✨🩷
+      </p>
+
+      <p>
+        And remember, no matter what happens or how difficult things get,
+        I'll always be here for you. 🤝❤️ No matter how far apart we are or
+        how life changes, you can always count on me. 🫂🫶🏻
+      </p>
+
+      <p>
+        And you know what? When you're happy, I'll be the happiest person in
+        this entire universe. 🌍❤️‍🩹✨ Your smile means so much to me, more
+        than you'll ever know. 🥹💖
+      </p>
+
+      <p>
+        SOOO, RINKUUUU… 🥺👉🏻👈🏻💗
+        <strong>Will you please be happy for me?</strong> 🫂🥹❤️ Promise me
+        you'll take care of yourself, keep smiling, and never forget how
+        special you are. 🦋🌸💝
+      </p>
+
+      <p>
+        I love youuu, Rinkuuuu… always wishing for your happiness, even if
+        destiny has different plans for us. 🥀❤️‍🩹🫂✨
+      </p>
     </div>
 
-    <div id="long-message" class="glass-panel">
-        <p>From the moment you walked into my life, everything changed. The colors got brighter, the laughs got louder, and the quiet moments became my favorite parts of the day. You've shown me a kind of love I only ever thought existed in movies. You are my best friend, my confidant, and the most beautiful soul I have ever known. Every day with you is a gift, and I never want to stop unwrapping it.</p>
-        <button id="btn-continue" class="btn-primary">Continue ❤️</button>
+    <div class="btn-container">
+      <button id="btn-yes" class="btn-primary">Yes, I will ❤️</button>
+      <button id="btn-no" type="button">No 🙈</button>
     </div>
+  </section>
 
-    <div id="task-2-ui">
-        <h2>Tap to fill my heart with love</h2>
-        <div id="giant-heart" class="giant-heart"></div>
+  <section id="success-message">
+    <div id="falling-content">
+      <h1 id="final-text">
+        The only thing that hurts me the most is… 🥹💔
+        What am I supposed to do with such a beautiful garden when my
+        favourite flower is not in that? 🌷🥀❤️‍🩹
+      </h1>
+
+      <p id="final-message">
+        No matter how beautiful the garden becomes, it will never feel the same
+        without the flower that made it special. 🫂🌸
+
+        <br><br>
+
+        You will always hold a special place in my heart, Rinkuuu… 🥹❤️
+        A place that no one else could ever take, because some people aren't
+        just a part of our lives; they become a beautiful part of our hearts
+        forever. 🫶🏻💗🌷
+      </p>
+
+      <p id="sender-text">Yours forever</p>
     </div>
+  </section>
 
-    <div id="proposal-card" class="glass-panel">
-        <h1>You are my greatest adventure, my safest home, and my one true love. Will you make me the happiest person in the universe and marry me? <span id="receiver-name-display"></span></h1>
-        <div class="btn-container">
-            <button id="btn-yes" class="btn-primary">Yes, I will</button>
-            <button id="btn-no" style="right: 0;">No</button>
-        </div>
-    </div>
+  <script>
+    // Change these names if needed.
+    const RECEIVER_NAME = "Rinkuuuu";
+    const SENDER_NAME = "Dhruvv";
 
-    <div id="success-message">
-        <div id="falling-content">
-            <h1 id="final-text">I Love You, <span id="receiver-name-display"></span>! ❤️</h1>
-            <p id="sender-text">Yours forever, <span id="sender-name-display"></span></p>
-        </div>
-    </div>
+    document.getElementById("sender-text").textContent =
+      `Yours forever besttest friend, ${SENDER_NAME}`;
 
-    <script>
-        // =======================================================
-        // 💌 EDIT YOUR NAMES HERE 💌
-        // =======================================================
-        const RECEIVER_NAME = "Ju"; // The person receiving it
-        const SENDER_NAME = "Sapthesh";   // The person sending it
-        // =======================================================
+    const canvas = document.getElementById("canvas-container");
+    const ctx = canvas.getContext("2d");
 
-        // Inject names into the final screen
-        document.getElementById('receiver-name-display').innerText = RECEIVER_NAME;
-        document.getElementById('sender-name-display').innerText = SENDER_NAME;
+    let width = 0;
+    let height = 0;
+    let particles = [];
+    let targets = [];
+    let score = 0;
+    let game1Active = true;
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
 
-        // --- Core Engine ---
-        const canvas = document.getElementById('canvas-container');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        let particles = [];
-        let targets = [];
-        let score = 0;
-        let game1Active = true;
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
+      width = window.innerWidth;
+      height = window.innerHeight;
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      targets.forEach(target => target.keepInsideScreen());
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    window.addEventListener("pointermove", event => {
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+    }, { passive: true });
+
+    class HeartParticle {
+      constructor(x, y, burst = false, gold = false) {
+        this.x = x ?? Math.random() * width;
+        this.y = y ?? Math.random() * height;
+        this.size = Math.random() * 12 + 5;
+        this.speedY = Math.random() * -1.8 - 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.8;
+        this.life = 1;
+        this.decay = burst ? Math.random() * 0.025 + 0.012 : 0;
+        this.burst = burst;
+        this.gold = gold;
+
+        if (burst) {
+          this.speedX = (Math.random() - 0.5) * 13;
+          this.speedY = (Math.random() - 0.5) * 13;
         }
-        window.addEventListener('resize', resize);
-        resize();
+      }
 
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.life);
+
+        ctx.fillStyle = this.gold
+          ? "#ffd700"
+          : `rgb(255, ${Math.random() * 70}, ${120 + Math.random() * 100})`;
+
+        ctx.shadowColor = this.gold ? "#ffcc00" : "#ff174d";
+        ctx.shadowBlur = this.gold ? 15 : 8;
+
+        const d = this.size;
+
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y + d / 4);
+        ctx.bezierCurveTo(
+          this.x - d, this.y - d / 3,
+          this.x - d / 2, this.y - d,
+          this.x, this.y - d / 3
+        );
+        ctx.bezierCurveTo(
+          this.x + d / 2, this.y - d,
+          this.x + d, this.y - d / 3,
+          this.x, this.y + d
+        );
+        ctx.fill();
+        ctx.restore();
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.life -= this.decay;
+
+        if (!this.burst) {
+          this.x += (mouseX - this.x) * 0.0008;
+
+          if (this.y < -30) {
+            this.y = height + 25;
+            this.x = Math.random() * width;
+          }
+        }
+      }
+    }
+
+    class TargetHeart {
+      constructor() {
+        this.size = 27;
+        this.x = 40 + Math.random() * Math.max(1, width - 80);
+        this.y = 100 + Math.random() * Math.max(1, height - 180);
+        this.speedX = (Math.random() - 0.5) * 3;
+        this.speedY = (Math.random() - 0.5) * 3;
+      }
+
+      keepInsideScreen() {
+        this.x = Math.max(25, Math.min(width - 25, this.x));
+        this.y = Math.max(90, Math.min(height - 30, this.y));
+      }
+
+      draw() {
+        ctx.save();
+
+        const pulse = Math.sin(Date.now() / 150) * 4;
+        const d = this.size + Math.max(0, pulse);
+
+        ctx.fillStyle = "#ffd700";
+        ctx.shadowColor = "#fff0a0";
+        ctx.shadowBlur = 18;
+
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y + d / 4);
+        ctx.bezierCurveTo(
+          this.x - d, this.y - d / 3,
+          this.x - d / 2, this.y - d,
+          this.x, this.y - d / 3
+        );
+        ctx.bezierCurveTo(
+          this.x + d / 2, this.y - d,
+          this.x + d, this.y - d / 3,
+          this.x, this.y + d
+        );
+        ctx.fill();
+        ctx.restore();
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.x < 25 || this.x > width - 25) this.speedX *= -1;
+        if (this.y < 85 || this.y > height - 25) this.speedY *= -1;
+
+        this.keepInsideScreen();
+      }
+    }
+
+    function createBurst(x, y, amount, gold = false) {
+      for (let i = 0; i < amount; i++) {
+        particles.push(new HeartParticle(x, y, true, gold));
+      }
+    }
+
+    for (let i = 0; i < 35; i++) {
+      particles.push(new HeartParticle());
+    }
+
+    for (let i = 0; i < 3; i++) {
+      targets.push(new TargetHeart());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].draw();
+
+        if (particles[i].life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+
+      if (game1Active) {
+        targets.forEach(target => {
+          target.update();
+          target.draw();
+        });
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // Catch the golden hearts.
+    canvas.style.pointerEvents = "auto";
+
+    canvas.addEventListener("pointerdown", event => {
+      if (!game1Active) return;
+
+      const x = event.clientX;
+      const y = event.clientY;
+
+      for (let i = targets.length - 1; i >= 0; i--) {
+        const target = targets[i];
+        const distance = Math.hypot(x - target.x, y - target.y);
+
+        if (distance < target.size + 28) {
+          createBurst(target.x, target.y, 28, true);
+          targets.splice(i, 1);
+
+          score++;
+          document.getElementById("score").textContent = score;
+
+          if (score >= 3) {
+            game1Active = false;
+            winTask1();
+          } else {
+            targets.push(new TargetHeart());
+          }
+
+          break;
+        }
+      }
+    });
+
+    function winTask1() {
+      gsap.to("#task-1-ui", {
+        opacity: 0,
+        y: -20,
+        duration: 0.5,
+        onComplete: () => {
+          document.getElementById("task-1-ui").style.display = "none";
+        }
+      });
+
+      createBurst(width / 2, height / 2, 70, true);
+
+      setTimeout(() => {
+        const message = document.getElementById("long-message");
+        message.style.visibility = "visible";
+
+        gsap.fromTo(message,
+          { opacity: 0, y: 25 },
+          { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }
+        );
+      }, 700);
+    }
+
+    // Continue to the next stage.
+    document.getElementById("btn-continue").addEventListener("click", () => {
+      const message = document.getElementById("long-message");
+
+      gsap.to(message, {
+        opacity: 0,
+        y: -20,
+        duration: 0.4,
+        onComplete: () => {
+          message.style.display = "none";
+        }
+      });
+
+      setTimeout(() => {
+        const task2 = document.getElementById("task-2-ui");
+        task2.style.visibility = "visible";
+
+        gsap.to(task2, {
+          opacity: 1,
+          duration: 0.8
+        });
+      }, 450);
+    });
+
+    // Tap the heart five times.
+    let heartClicks = 0;
+    const giantHeart = document.getElementById("giant-heart");
+
+    function tapGiantHeart(event) {
+      if (heartClicks >= 5) return;
+
+      heartClicks++;
+
+      const rect = giantHeart.getBoundingClientRect();
+      createBurst(
+        rect.left + rect.width / 2,
+        rect.top + rect.height / 2,
+        12,
+        heartClicks === 5
+      );
+
+      gsap.to(giantHeart, {
+        scale: 1 + heartClicks * 0.16,
+        duration: 0.2,
+        ease: "back.out(2)"
+      });
+
+      if (heartClicks === 5) {
+        gsap.to("#task-2-ui", {
+          opacity: 0,
+          duration: 0.35,
+          onComplete: () => {
+            document.getElementById("task-2-ui").style.display = "none";
+          }
         });
 
-        window.addEventListener('click', (e) => {
-            if(e.target.tagName === 'BUTTON' || e.target.id === 'giant-heart') return;
-            createBurst(e.clientX, e.clientY, 12, false);
+        createBurst(width / 2, height / 2, 100, true);
 
-            if (game1Active) {
-                for (let i = targets.length - 1; i >= 0; i--) {
-                    const t = targets[i];
-                    const dist = Math.hypot(e.clientX - t.x, e.clientY - t.y);
-                    if (dist < t.size + 40) { 
-                        createBurst(t.x, t.y, 40, true);
-                        targets.splice(i, 1);
-                        score++;
-                        document.getElementById('score').innerText = score;
-                        
-                        if (score === 3) {
-                            game1Active = false;
-                            winTask1();
-                        }
-                        break;
-                    }
-                }
-            }
-        });
+        setTimeout(() => {
+          const card = document.getElementById("proposal-card");
+          card.style.visibility = "visible";
 
-        class HeartParticle {
-            constructor(x, y, isBurst = false, isGold = false) {
-                this.x = x || Math.random() * width;
-                this.y = y || Math.random() * height + height;
-                this.size = Math.random() * 15 + 5;
-                this.speedY = Math.random() * -2 - 1;
-                this.speedX = (Math.random() - 0.5) * 1;
-                this.life = 1;
-                this.decay = isBurst ? Math.random() * 0.03 + 0.01 : 0; 
-                this.isBurst = isBurst;
-                this.isGold = isGold;
-                
-                if (isBurst) {
-                    this.speedY = (Math.random() - 0.5) * 20; // Faster blast
-                    this.speedX = (Math.random() - 0.5) * 20;
-                }
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.life;
-                if (this.isGold) {
-                    ctx.fillStyle = `rgba(255, 215, 0, ${this.life})`;
-                    ctx.shadowColor = "#ffcc00";
-                    ctx.shadowBlur = 20;
-                } else {
-                    ctx.fillStyle = `rgba(255, ${Math.random() * 100}, ${Math.random() * 100 + 100}, 0.8)`;
-                    ctx.shadowColor = "#ff003c";
-                    ctx.shadowBlur = 10;
-                }
-                ctx.beginPath();
-                const d = this.size;
-                ctx.moveTo(this.x, this.y + d / 4);
-                ctx.quadraticCurveTo(this.x, this.y, this.x + d / 4, this.y);
-                ctx.quadraticCurveTo(this.x + d / 2, this.y, this.x + d / 2, this.y + d / 4);
-                ctx.quadraticCurveTo(this.x + d / 2, this.y + d / 2, this.x, this.y + d);
-                ctx.quadraticCurveTo(this.x - d / 2, this.y + d / 2, this.x - d / 2, this.y + d / 4);
-                ctx.quadraticCurveTo(this.x - d / 2, this.y, this.x - d / 4, this.y);
-                ctx.quadraticCurveTo(this.x, this.y, this.x, this.y + d / 4);
-                ctx.fill();
-                ctx.restore();
-            }
-            update() {
-                this.y += this.speedY;
-                this.x += this.speedX;
-                if (!this.isBurst) {
-                    const dx = mouseX - this.x;
-                    this.x += dx * 0.001; 
-                }
-                this.life -= this.decay;
-                if (this.y < -50 && !this.isBurst) {
-                    this.y = height + 50;
-                    this.x = Math.random() * width;
-                }
-            }
+          gsap.fromTo(card,
+            { opacity: 0, scale: 0.94 },
+            { opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.4)" }
+          );
+        }, 500);
+      }
+    }
+
+    giantHeart.addEventListener("click", tapGiantHeart);
+    giantHeart.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        tapGiantHeart(event);
+      }
+    });
+
+    // The No button dodges on desktop and touch devices.
+    const btnNo = document.getElementById("btn-no");
+    const card = document.getElementById("proposal-card");
+
+    function moveNoButton() {
+      const maxX = Math.max(0, Math.min(100, card.clientWidth / 3));
+      const maxY = 55;
+
+      const x = (Math.random() * 2 - 1) * maxX;
+      const y = (Math.random() * 2 - 1) * maxY;
+
+      gsap.to(btnNo, {
+        x,
+        y,
+        duration: 0.18,
+        ease: "power2.out"
+      });
+    }
+
+    btnNo.addEventListener("pointerenter", event => {
+      if (event.pointerType === "mouse") moveNoButton();
+    });
+
+    btnNo.addEventListener("touchstart", event => {
+      event.preventDefault();
+      moveNoButton();
+    }, { passive: false });
+
+    // The final scene.
+    document.getElementById("btn-yes").addEventListener("click", () => {
+      gsap.to("#proposal-card", {
+        opacity: 0,
+        scale: 0.96,
+        duration: 0.35,
+        onComplete: () => {
+          card.style.display = "none";
         }
+      });
 
-        class TargetHeart {
-            constructor() {
-                this.size = 30;
-                this.x = Math.random() * (width - 100) + 50;
-                this.y = Math.random() * (height - 100) + 50;
-                this.speedX = (Math.random() - 0.5) * 6;
-                this.speedY = (Math.random() - 0.5) * 6;
-            }
-            draw() {
-                ctx.save();
-                const pulse = Math.sin(Date.now() / 150) * 5;
-                ctx.fillStyle = "#FFD700";
-                ctx.shadowColor = "#FFFFFF";
-                ctx.shadowBlur = 25 + pulse;
-                ctx.beginPath();
-                const d = this.size + (pulse > 0 ? pulse : 0);
-                ctx.moveTo(this.x, this.y + d / 4);
-                ctx.quadraticCurveTo(this.x, this.y, this.x + d / 4, this.y);
-                ctx.quadraticCurveTo(this.x + d / 2, this.y, this.x + d / 2, this.y + d / 4);
-                ctx.quadraticCurveTo(this.x + d / 2, this.y + d / 2, this.x, this.y + d);
-                ctx.quadraticCurveTo(this.x - d / 2, this.y + d / 2, this.x - d / 2, this.y + d / 4);
-                ctx.quadraticCurveTo(this.x - d / 2, this.y, this.x - d / 4, this.y);
-                ctx.quadraticCurveTo(this.x, this.y, this.x, this.y + d / 4);
-                ctx.fill();
-                ctx.restore();
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x < 20 || this.x > width - 20) this.speedX *= -1;
-                if (this.y < 20 || this.y > height - 20) this.speedY *= -1;
-            }
-        }
+      particles.forEach(particle => {
+        if (!particle.burst) particle.speedY -= 4;
+      });
 
-        for (let i = 0; i < 40; i++) particles.push(new HeartParticle());
-        for (let i = 0; i < 3; i++) targets.push(new TargetHeart());
+      const success = document.getElementById("success-message");
+      success.style.visibility = "visible";
+      success.style.opacity = "1";
 
-        function createBurst(x, y, amount, isGold = false) {
-            for (let i = 0; i < amount; i++) {
-                particles.push(new HeartParticle(x, y, true, isGold));
-            }
-        }
+      gsap.fromTo("#falling-content",
+        { y: -window.innerHeight * 0.8, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1.1,
+          ease: "power3.out",
+          onComplete: () => {
+            createBurst(width / 2, height / 2, 180, true);
 
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
-            for (let i = particles.length - 1; i >= 0; i--) {
-                particles[i].update();
-                particles[i].draw();
-                if (particles[i].life <= 0) particles.splice(i, 1);
-            }
-            for (let i = 0; i < targets.length; i++) {
-                targets[i].update();
-                targets[i].draw();
-            }
-            requestAnimationFrame(animate);
-        }
-        animate();
+            gsap.fromTo("#falling-content",
+              { scale: 0.94 },
+              { scale: 1, duration: 0.5, ease: "back.out(1.5)" }
+            );
 
-        // --- Flows ---
-        function winTask1() {
-            gsap.to("#task-1-ui", { opacity: 0, y: -20, duration: 0.5, onComplete: () => {
-                document.getElementById('task-1-ui').style.display = "none";
-            }});
-            createBurst(width/2, height/2, 80, true);
-            
-            setTimeout(() => {
-                gsap.set("#long-message", { visibility: "visible" });
-                gsap.to("#long-message", { opacity: 1, y: "-50%", duration: 1.5, ease: "power2.out" });
-            }, 1000);
-        }
-
-        document.getElementById('btn-continue').addEventListener('click', (e) => {
-            createBurst(e.clientX, e.clientY, 20, false);
-            gsap.to("#long-message", { opacity: 0, y: "-60%", duration: 0.8, onComplete: () => {
-                document.getElementById('long-message').style.display = "none";
-            }});
-            
-            setTimeout(() => {
-                gsap.set("#task-2-ui", { visibility: "visible" });
-                gsap.to("#task-2-ui", { opacity: 1, duration: 1.5 });
-            }, 1000);
-        });
-
-        let heartClicks = 0;
-        const giantHeart = document.getElementById('giant-heart');
-        
-        giantHeart.addEventListener('click', (e) => {
-            heartClicks++;
-            createBurst(e.clientX, e.clientY, 15, false);
-            
-            let newScale = 1 + (heartClicks * 0.3);
-            gsap.to(giantHeart, { scale: newScale, duration: 0.2, ease: "back.out(2)" });
-            
-            if(heartClicks === 5) {
-                gsap.to("#task-2-ui", { opacity: 0, duration: 0.3, onComplete: () => {
-                    document.getElementById('task-2-ui').style.display = "none";
-                }});
-                createBurst(width/2, height/2, 150, true);
-                
-                setTimeout(() => {
-                    gsap.set("#proposal-card", { visibility: "visible" });
-                    gsap.to("#proposal-card", { opacity: 1, scale: 1, y: "-50%", duration: 1.5, ease: "back.out(1.7)" });
-                }, 800);
-            }
-        });
-
-        const btnNo = document.getElementById('btn-no');
-        const btnYes = document.getElementById('btn-yes');
-        const card = document.getElementById('proposal-card');
-
-        btnNo.addEventListener('mouseover', () => {
-            const cardRect = card.getBoundingClientRect();
-            const btnRect = btnNo.getBoundingClientRect();
-            const randomX = Math.floor(Math.random() * (cardRect.width - btnRect.width - 40));
-            const randomY = Math.floor(Math.random() * (cardRect.height - btnRect.height - 40)) - 60; 
-
-            gsap.to(btnNo, { x: randomX, y: randomY, duration: 0.2, ease: "power4.out" });
-            const rect = btnNo.getBoundingClientRect();
-            createBurst(rect.left + rect.width/2, rect.top + rect.height/2, 5);
-        });
-
-        // --- The Explosive Finale ---
-        btnYes.addEventListener('click', (e) => {
-            // Hide the card
-            gsap.to("#proposal-card", { opacity: 0, scale: 0.5, duration: 0.5, onComplete: () => {
-                card.style.display = "none";
-            }});
-            
-            // Speed up ambient hearts to make it feel intense
-            particles.forEach(p => { if(!p.isBurst) p.speedY -= 10; });
-
-            // Setup Success Message
-            gsap.set("#success-message", { visibility: "visible", opacity: 1 });
-            
-            // Animate the drop
-            gsap.to("#falling-content", {
-                y: 0, // Drop to center
-                duration: 1.2,
-                ease: "power3.in", // Accelerate like gravity
-                onComplete: () => {
-                    // 1. The Blast
-                    createBurst(window.innerWidth / 2, window.innerHeight / 2, 250, true);
-                    
-                    // 2. Camera Shake Effect
-                    gsap.to("#canvas-container", {
-                        x: () => Math.random() * 20 - 10,
-                        y: () => Math.random() * 20 - 10,
-                        duration: 0.05,
-                        repeat: 8,
-                        yoyo: true,
-                        onComplete: () => gsap.set("#canvas-container", {x: 0, y: 0})
-                    });
-
-                    // 3. Text Bounce
-                    gsap.fromTo("#falling-content", 
-                        { scale: 0.8 }, 
-                        { scale: 1, duration: 0.6, ease: "elastic.out(1, 0.3)" }
-                    );
-
-                    // 4. Reveal Sender Name
-                    gsap.to("#sender-text", { opacity: 1, duration: 1.5, delay: 0.5 });
-                }
+            gsap.to("#sender-text", {
+              opacity: 1,
+              duration: 1.1,
+              delay: 0.4
             });
-        });
-    </script>
+          }
+        }
+      );
+    });
+  </script>
 </body>
 </html>
